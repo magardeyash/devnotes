@@ -13,19 +13,22 @@ const PORT = process.env.PORT || 5000;
 
 // CORS setup
 const allowedOrigins = [
-  process.env.CLIENT_URL || 'http://localhost:5173',
-  'http://localhost:3000'
+  'http://localhost:5173',
+  'http://localhost:3000',
+  // Split CLIENT_URL by comma to support multiple origins
+  ...(process.env.CLIENT_URL ? process.env.CLIENT_URL.split(',').map(u => u.trim()) : []),
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
+      // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
+      // Allow any Vercel deployment URL (covers preview & branch deploys)
+      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      if (allowedOrigins.includes(origin)) return callback(null, true);
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
     },
     credentials: true
   })
