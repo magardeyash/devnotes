@@ -24,8 +24,8 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (mobile apps, curl, Postman)
       if (!origin) return callback(null, true);
-      // Allow any Vercel deployment URL (covers preview & branch deploys)
-      if (origin.endsWith('.vercel.app')) return callback(null, true);
+      // Allow any Netlify deployment URL (covers preview & branch deploys)
+      if (origin.endsWith('.netlify.app')) return callback(null, true);
       if (allowedOrigins.includes(origin)) return callback(null, true);
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
