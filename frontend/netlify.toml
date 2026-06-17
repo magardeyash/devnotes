@@ -1,0 +1,16 @@
+# Netlify configuration for the DevNotes frontend (Vite + React SPA)
+
+[build]
+  # Directory to publish (relative to the repo root or this file's location)
+  publish = "dist"
+  # Build command
+  command = "npm run build"
+  # Base directory where the frontend lives (relative to repo root)
+  base = "frontend"
+
+# SPA redirect: send all routes to index.html so React Router handles them.
+# Without this, refreshing /dashboard or /notes/:id returns Netlify's 404.
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200

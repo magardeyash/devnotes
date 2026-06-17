@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
 // @access  Private
 router.get('/:id', async (req, res) => {
   try {
-    const note = await Note.findById(req.id || req.params.id);
+    const note = await Note.findById(req.params.id);
 
     if (!note) {
       return res.status(404).json({ message: 'Note not found' });

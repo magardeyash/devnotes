@@ -1,32 +1,22 @@
 const jwt = require('jsonwebtoken');
 
 const protect = async (req, res, next) => {
-  let token;
-
-  // Check for token in Authorization header
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith('Bearer')
-  ) {
-    try {
-      // Get token from header
-      token = req.headers.authorization.split(' ')[1];
-
-      // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-      // Attach user object to request
-      req.user = { id: decoded.id };
-
-      next();
-    } catch (error) {
-      console.error('Auth middleware token verification failed:', error.message);
-      res.status(401).json({ message: 'Not authorized, token failed' });
-    }
+  // Check for Bearer token in Authorization header
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Not authorized, no token provided' });
   }
 
-  if (!token) {
-    res.status(401).json({ message: 'Not authorized, no token provided' });
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Attach minimal user object to request
+    req.user = { id: decoded.id };
+    next();
+  } catch (error) {
+    console.error('Token verification failed:', error.message);
+    return res.status(401).json({ message: 'Not authorized, token is invalid or expired' });
   }
 };
 
